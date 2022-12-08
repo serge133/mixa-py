@@ -1,0 +1,5 @@
+__pycache__/
+security/video/
+security/trigger/
+archive/
+.env
