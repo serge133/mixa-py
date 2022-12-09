@@ -120,6 +120,7 @@ def read_vid(video_label: str):
 
     print("processed job")
 
+read_vid('0_1670559006.752842')
 # def main():
 #     for filename in os.listdir('security/video'):
 #         # BAD 

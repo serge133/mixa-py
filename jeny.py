@@ -1,8 +1,9 @@
 import os 
 import discord
 from dotenv import load_dotenv
-import os
-from arm import arm
+import subprocess
+import random
+import shutil
 
 load_dotenv()
 TOKEN: str | None = os.getenv("DISCORD_TOKEN")
@@ -18,8 +19,10 @@ async def on_ready():
     print(f"{client.user} has connected!")
     
 
+pro: subprocess.Popen | None = None
 @client.event
 async def on_message(message):
+    global pro
     channel = message.channel
     if str(message.author.id) == ID:
         return
@@ -29,7 +32,7 @@ async def on_message(message):
     msg = message.content[22:].strip()
 
     if (msg == "status"):
-        clips = os.listdir('security/trigger')
+        clips = set(os.listdir('security/trigger'))
         if '.DS_Store' in clips:
             clips.remove('.DS_Store')
 
@@ -41,24 +44,40 @@ async def on_message(message):
         await channel.send(f"You have {len(clips)} clips")
         
         for clip in clips:
-            # Look at last clip
             frames = os.listdir(f'security/trigger/{clip}')
-            await channel.send(f"In the last clip, you have {len(frames)} frame(s) that triggered")
+            if ".DS_Store" in frames:
+                frames.remove(".DS_Store")
+            await channel.send(f"Fetching random frame per clip")
 
-            for frame in frames:
-                if frame == '.DS_Store':
-                    continue
-                await channel.send(
-                    file=discord.File(f"security/trigger/{clip}/{frame}")
-                )
+            choice = random.choice(frames)
+
+            await channel.send(
+                file=discord.File(f"security/trigger/{clip}/{choice}")
+            )
     elif (msg == 'arm'):
         await channel.send("Armed for 30 minutes, but I'm not counting.")
+        # 30 minutes of footage 15 second clips (120 clips )
+        pro = subprocess.Popen(
+            "python3.10 arm.py --wait 0 --spv 15 --vid_num 120", shell=True, start_new_session=True, stdout=subprocess.PIPE)
+    
+    elif (msg == 'clear'):
+        clips = os.listdir('security/trigger')
+        for clip in clips:
+            if clip == '.DS_Store':
+                continue
+            shutil.rmtree(f'security/trigger/{clip}', ignore_errors=False, onerror=None)
+
+        await channel.send("Cleared Clips")
 
     elif (msg == 'disarm'):
-        # event.set()
+        if not pro:
+            await channel.send("Nothing was armed in the first place ")
+            return
+        await channel.send(f"Disarming process: {pro.pid}")
+        pro.kill()
         await channel.send("Disarmed")
     elif (msg == 'suicide'):
-        channel.send("*Jeny fell off a tall bridge*")
+        await channel.send("*Jeny fell off a tall bridge*")
         exit()
     # await channel.send("on message")
 

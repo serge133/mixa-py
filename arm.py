@@ -82,9 +82,10 @@ def get_params():
 
     return params
 
-def arm(seconds_per_vid: int = 30, number_of_vids: int = 100):
-    global is_armed
+def arm(seconds_per_vid: int = 15, number_of_vids: int = 120, is_armed: bool = True) -> bool:
     for vidnum in range(number_of_vids):
+        if not is_armed:
+            break
         vid_label=f'{vidnum}_{datetime.now().timestamp()}'
         vid_path=f'security/video/{vid_label}.mp4'
         record(
@@ -96,6 +97,9 @@ def arm(seconds_per_vid: int = 30, number_of_vids: int = 100):
         # Create a new thread to process the vid 
         process_vid_thread = threading.Thread(target=read_vid, args=[vid_label])
         process_vid_thread.start()
+
+    print("Disarmed")
+    return True
 
 
     
