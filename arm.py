@@ -1,16 +1,11 @@
 import os
 import cv2
-from time import sleep
 from datetime import datetime
 import sys
 from typing import Any
 from analyze_video import read_vid
-from collections import deque
 import threading
-# filename = 'security/video.mp4'
-# fps = 24.0
-# res = '720p'
-# seconds = -1
+from time import sleep
 
 def record(file_path='security/video.mp4', fps=25, res='480p', seconds=-1):
     # Set resolution for the video capture
@@ -87,7 +82,8 @@ def get_params():
 
     return params
 
-def arm(seconds_per_vid: int, number_of_vids: int):
+def arm(seconds_per_vid: int = 30, number_of_vids: int = 100):
+    global is_armed
     for vidnum in range(number_of_vids):
         vid_label=f'{vidnum}_{datetime.now().timestamp()}'
         vid_path=f'security/video/{vid_label}.mp4'
@@ -111,14 +107,6 @@ if __name__ == "__main__":
     print("ARMED")
     
 
-
-    # for vidnum in range(params['--vid_num']):
-    #     vid_label=f'{vidnum}_{datetime.now().timestamp()}'
-    #     vid_path=get_vid_path(vid_label)
-        
-
-    #     record(file_path=vid_path, res='720p', seconds=params['--spv'], fps=25)
-    #     print('parsing video')
 
     arm(
         seconds_per_vid=params['--spv'],

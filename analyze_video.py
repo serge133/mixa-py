@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 from collections import deque 
 import os
-from discord_api import send_message
+# from discord_api import send_message
 
 """HOW MUCH OF THE PIXELS SHOULD CHANGE TO BE CONSIDERED CHANGED"""
 # THRESHOLD = 25
@@ -96,14 +96,14 @@ def process_image(compare, img, count, og, label: str):
         if not os.path.exists(path):
             os.mkdir(path)
         cv2.imwrite(f"{path}/frame_{count}_{total_changed_pixels}.jpg", og)     # save frame as JPEG file      
-        send_message(f"MOTION DETECTED of size {total_changed_pixels} px! ")
+        # send_message(f":alarm_clock: MOTION DETECTED of size {total_changed_pixels} px! :alarm_clock:")
     # cv2.imwrite(f"change/frame_{count}.jpg", change)     # save frame as JPEG file      
 
 def read_vid(video_label: str):
     vidcap = cv2.VideoCapture(f"security/video/{video_label}.mp4")
     success,image = vidcap.read()
     base = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    cv2.imwrite(f"security/trigger/{video_label}/base.jpg", image)     # save frame as JPEG file      
+    # cv2.imwrite(f"security/trigger/{video_label}/base.jpg", base)     # save frame as JPEG file      
 
     frame_count = 0
     while success:
@@ -119,7 +119,6 @@ def read_vid(video_label: str):
         frame_count += 1
 
     print("processed job")
-
 
 # def main():
 #     for filename in os.listdir('security/video'):
