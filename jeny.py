@@ -37,6 +37,9 @@ async def on_message(message):
     msg: str = message.content[22:].strip()
 
     if (msg == "status"):
+        if pro is None:
+            await channel.send("Currently not armed. Do @me arm")
+            return
         # Sorts the clips in ascending order then checks if macs config file is there to remove it 
         clips = sorted(os.listdir('security/trigger'))
         if clips[0] == '.DS_Store':
@@ -52,9 +55,10 @@ async def on_message(message):
         await channel.send(f"You have {len(clips)} clips")
         
         for clip in clips:
-            frames = sorted(os.listdir(f'security/trigger/{clip}'))
-            if frames[0] == '.DS_Store':
-                frames = frames[1:]
+            frames = os.listdir(f'security/trigger/{clip}')
+            # ! BAD
+            if ".DS_Store" in frames:
+                frames.remove(".DS_Store")
 
             await channel.send(f"Fetching random frame per clip")
 
@@ -67,11 +71,15 @@ async def on_message(message):
             )
     # Arms security system 
     elif (msg == 'arm'):
-        await channel.send("Armed for 30 minutes, but I'm not counting.")
         # 30 minutes of footage 15 second clips (120 clips )
         # Runs in a seperate process and saves the details to the global variable pro to then be able to kill it 
+        if pro is not None:
+            await channel.send("HEYY, I am already armed!")
+            return
+        await channel.send("Armed for 30 minutes, but I'm not counting. That will he 1.8 GB.")
         pro = subprocess.Popen(
-            "python3.10 arm.py --wait 0 --spv 15 --vid_num 120", shell=True, start_new_session=True, stdout=subprocess.PIPE)
+            # 1.8 Gigabytes of video 
+            "python3.10 arm.py --wait 0 --spv 30 --vid_num 60", shell=True, start_new_session=True, stdout=subprocess.PIPE)
     
     # Clears clips and frames 
     elif (msg == 'clear'):

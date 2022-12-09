@@ -54,9 +54,6 @@ def dfs(matrix: cv2.Mat, x: int, y: int, visited: set[tuple[int, int]], original
     while queue:
         pixel_x, pixel_y = queue.popleft()
 
-        # if outOfBound(matrix, pixel_x, pixel_y) or matrix[pixel_y][pixel_x] < THRESHOLD or f"{pixel_x},{pixel_y}" in visited:
-            # continue
-
         top_left = [min(top_left[0], pixel_x), min(top_left[1], pixel_y)]
         bottom_right = [max(bottom_right[0], pixel_x), max(bottom_right[1], pixel_y)]
 
@@ -155,7 +152,6 @@ def read_vid(video_label: str) -> None:
 
     print(f'processed {video_label}')
 
-read_vid("4_1670565479.302986")
 # def main():
 #     for filename in os.listdir('security/video'):
 #         # BAD 
